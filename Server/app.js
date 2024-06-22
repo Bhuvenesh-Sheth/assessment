@@ -4,6 +4,7 @@ const ProductTransaction = require('./ProductTransaction.js')
 const axios = require('axios');
 const { statistics, barchart, piechart } = require('./utils');
 const app = express();
+const swaggerSetup = require('./swagger');
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = 'mongodb+srv://shethbhuvenesh:w9mniHAGWAKrS6vC@cluster0.wwj8uce.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
@@ -13,6 +14,9 @@ mongoose.connect(MONGO_URI, {
 });
 
 app.use(express.json());
+
+
+swaggerSetup(app);
 
 
 app.get('/initialize_db', async (req, res) => {
@@ -30,6 +34,45 @@ app.get('/initialize_db', async (req, res) => {
 });
 
 
+/**
+ * @swagger
+ * /get_transactions:
+ *   get:
+ *     summary: Retrieve transactions with optional search and pagination
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search text for title, description, or price
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: perPage
+ *         schema:
+ *           type: integer
+ *         description: Number of items per page
+ *     responses:
+ *       '200':
+ *         description: A list of transactions
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 transactions:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Transaction'
+ *                 total:
+ *                   type: integer
+ *                   description: Total number of transactions
+ *       '500':
+ *         description: Internal server error
+ */
 app.get('/get_transactions', async (req, res) => {
   const { search = '', page = 1, perPage = 10 } = req.query;
 
@@ -62,6 +105,38 @@ app.get('/get_transactions', async (req, res) => {
 
 
 
+/**
+ * @swagger
+ * /get_statistics/{month}:
+ *   get:
+ *     summary: Get statistics for a specific month
+ *     parameters:
+ *       - in: path
+ *         name: month
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Month (1-12) for which statistics are to be fetched
+ *     responses:
+ *       '200':
+ *         description: Statistics for the specified month
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 totalSaleAmount:
+ *                   type: number
+ *                   description: Total sale amount for the month
+ *                 totalSoldItems:
+ *                   type: integer
+ *                   description: Total number of sold items for the month
+ *                 totalNotSoldItems:
+ *                   type: integer
+ *                   description: Total number of not sold items for the month
+ *       '500':
+ *         description: Internal server error
+ */
 app.get('/get_statistics/:month', async (req, res) => {
   const { month } = req.params;
 
@@ -74,6 +149,37 @@ app.get('/get_statistics/:month', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /get_barchart/{month}:
+ *   get:
+ *     summary: Get bar chart data for price ranges in a specific month
+ *     parameters:
+ *       - in: path
+ *         name: month
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Month (1-12) for which bar chart data is to be fetched
+ *     responses:
+ *       '200':
+ *         description: Bar chart data for the specified month
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   range:
+ *                     type: string
+ *                     description: Price range
+ *                   count:
+ *                     type: integer
+ *                     description: Number of items in the price range
+ *       '500':
+ *         description: Internal server error
+ */
 app.get('/get_barchart/:month', async (req, res) => {
   const { month } = req.params;
 
@@ -86,6 +192,37 @@ app.get('/get_barchart/:month', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /get_piechart/{month}:
+ *   get:
+ *     summary: Get pie chart data for categories in a specific month
+ *     parameters:
+ *       - in: path
+ *         name: month
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Month (1-12) for which pie chart data is to be fetched
+ *     responses:
+ *       '200':
+ *         description: Pie chart data for the specified month
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   category:
+ *                     type: string
+ *                     description: Product category
+ *                   count:
+ *                     type: integer
+ *                     description: Number of items in the category
+ *       '500':
+ *         description: Internal server error
+ */
 app.get('/get_piechart/:month', async (req, res) => {
   const { month } = req.params;
 
@@ -98,15 +235,80 @@ app.get('/get_piechart/:month', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /get_combined_data/{month}:
+ *   get:
+ *     summary: Get combined data for statistics, bar chart, and pie chart for a specific month
+ *     parameters:
+ *       - in: path
+ *         name: month
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 12
+ *         required: true
+ *         description: Numeric value representing the month (1-12)
+ *     responses:
+ *       '200':
+ *         description: Combined data for the specified month
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 statistics:
+ *                   type: object
+ *                   properties:
+ *                     totalSaleAmount:
+ *                       type: number
+ *                     totalSoldItems:
+ *                       type: integer
+ *                     totalNotSoldItems:
+ *                       type: integer
+ *                   example:
+ *                     totalSaleAmount: 2500
+ *                     totalSoldItems: 35
+ *                     totalNotSoldItems: 15
+ *                 barChart:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       range:
+ *                         type: string
+ *                       count:
+ *                         type: integer
+ *                   example:
+ *                     - range: "0-100"
+ *                       count: 12
+ *                     - range: "101-200"
+ *                       count: 25
+ *                 pieChart:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       category:
+ *                         type: string
+ *                       count:
+ *                         type: integer
+ *                   example:
+ *                     - category: "Electronics"
+ *                       count: 20
+ *                     - category: "Clothing"
+ *                       count: 15
+ */
 app.get('/get_combined_data/:month', async (req, res) => {
   const { month } = req.params;
 
   try {
     const [statisticsResponse, barChartResponse, pieChartResponse] = await Promise.all([
-      axios.get(`http://localhost:${PORT}/statistics/${month}`),
-      axios.get(`http://localhost:${PORT}/barchart/${month}`),
-      axios.get(`http://localhost:${PORT}/piechart/${month}`)
+      axios.get(`http://localhost:${PORT}/get_statistics/${month}`),
+      axios.get(`http://localhost:${PORT}/get_barchart/${month}`),
+      axios.get(`http://localhost:${PORT}/get_piechart/${month}`)
     ]);
+
 
     const combinedData = {
       statistics: statisticsResponse.data,
