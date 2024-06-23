@@ -7,7 +7,7 @@ const { statistics, barchart, piechart } = require('./utils');
 const app = express();
 const swaggerSetup = require('./swagger');
 const PORT = 3001;
-const MONGO_URI = 'mongodb+srv://shethbhuvenesh:w9mniHAGWAKrS6vC@cluster0.wwj8uce.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const MONGO_URI = 'mongodb+srv://<uname>:<pswd>@cluster0.wwj8uce.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
 
 
