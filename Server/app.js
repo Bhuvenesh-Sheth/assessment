@@ -2,11 +2,15 @@ const express = require('express');
 const mongoose = require('mongoose');
 const ProductTransaction = require('./ProductTransaction.js')
 const axios = require('axios');
+var cors = require('cors')
 const { statistics, barchart, piechart } = require('./utils');
 const app = express();
 const swaggerSetup = require('./swagger');
-const PORT = process.env.PORT || 3000;
+const PORT = 3001;
 const MONGO_URI = 'mongodb+srv://shethbhuvenesh:w9mniHAGWAKrS6vC@cluster0.wwj8uce.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+
+
+
 
 mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
@@ -14,7 +18,7 @@ mongoose.connect(MONGO_URI, {
 });
 
 app.use(express.json());
-
+app.use(cors())
 
 swaggerSetup(app);
 
@@ -66,7 +70,7 @@ app.get('/initialize_db', async (req, res) => {
  *                 transactions:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/Transaction'
+ *                     $ref: '#/ProductTrasaction'
  *                 total:
  *                   type: integer
  *                   description: Total number of transactions
