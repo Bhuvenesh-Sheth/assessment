@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const uri = "http://localhost:3001";
+export const uri = "https://server2-coq34vu10-bhuvenesh-sheths-projects.vercel.app";
 
 export const endpoint =  {
   get_transactions : "/get_transactions",
