@@ -19,8 +19,8 @@
 To get started with this project, clone the repository and follow the installation steps below.
 
 ```bash
-git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name
+git clone [https://github.com/your-username/your-repo-name.git](https://github.com/Bhuvenesh-Sheth/assessment.git)
+cd assessment
 ```
 
 ## Backend Setup
