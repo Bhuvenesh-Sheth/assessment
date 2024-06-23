@@ -65,7 +65,8 @@ npm start
 ```
 The frontend server should now be running on http://localhost:3000.
 
+### Swagger api doc /api-docs
 
-
+![Screenshot (59)](https://github.com/Bhuvenesh-Sheth/assessment/assets/140826716/aff69d36-7fad-4837-98c4-400bd9ce7885)
 
 
